@@ -1,0 +1,202 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Pikachu 靶场暴力破解 | huppe's Blog</title><meta name="author" content="huppe"><meta name="copyright" content="huppe"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Pikachu靶场笔记1. 暴力破解1.1 直接BurpSuite设置两组点位破解1.2 有验证码的破解（on client）我们打开源码，根据提示进入PHP源码，查看到验证码是前端生成且验证的（前端验证码的判断）。 验证码源码   此时，我们只需要抓包查看请求，把一些验证码相关的请求改一下。 请求抓包 最后，查看爆破长度，即可成功爆破。 爆破成功 1.3 有验证码的破解（on server）尝试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pikachu 靶场暴力破解">
+<meta property="og:url" content="https://huppe.github.io/2025/03/01/pikachu%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3writeup/">
+<meta property="og:site_name" content="huppe&#39;s Blog">
+<meta property="og:description" content="Pikachu靶场笔记1. 暴力破解1.1 直接BurpSuite设置两组点位破解1.2 有验证码的破解（on client）我们打开源码，根据提示进入PHP源码，查看到验证码是前端生成且验证的（前端验证码的判断）。 验证码源码   此时，我们只需要抓包查看请求，把一些验证码相关的请求改一下。 请求抓包 最后，查看爆破长度，即可成功爆破。 爆破成功 1.3 有验证码的破解（on server）尝试">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://huppe.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2025-03-01T15:09:54.000Z">
+<meta property="article:modified_time" content="2025-03-01T15:10:38.948Z">
+<meta property="article:author" content="huppe">
+<meta property="article:tag" content="网络安全">
+<meta property="article:tag" content="暴力破解">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://huppe.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Pikachu 靶场暴力破解",
+  "url": "https://huppe.github.io/2025/03/01/pikachu%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3writeup/",
+  "image": "https://huppe.github.io/img/butterfly-icon.png",
+  "datePublished": "2025-03-01T15:09:54.000Z",
+  "dateModified": "2025-03-01T15:10:38.948Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "huppe",
+      "url": "https://huppe.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/huppe.github.io/img/favicon.png"><link rel="canonical" href="https://huppe.github.io/2025/03/01/pikachu%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3writeup/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/huppe.github.io/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><!-- 添加 Live2D 看板娘 CSS--><link rel="stylesheet" href="/huppe.github.io/live2d-widget/waifu.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/huppe.github.io/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Pikachu 靶场暴力破解',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="particles-js"></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/huppe.github.io/"><span class="site-name">huppe's Blog</span></a><a class="nav-page-title" href="/huppe.github.io/"><span class="site-name">Pikachu 靶场暴力破解</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Pikachu 靶场暴力破解</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-03-01T15:09:54.000Z" title="发表于 2025-03-01 23:09:54">2025-03-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-03-01T15:10:38.948Z" title="更新于 2025-03-01 23:10:38">2025-03-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/huppe.github.io/categories/%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/">安全研究</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="Pikachu靶场笔记"><a href="#Pikachu靶场笔记" class="headerlink" title="Pikachu靶场笔记"></a>Pikachu靶场笔记</h1><h2 id="1-暴力破解"><a href="#1-暴力破解" class="headerlink" title="1. 暴力破解"></a>1. 暴力破解</h2><h3 id="1-1-直接BurpSuite设置两组点位破解"><a href="#1-1-直接BurpSuite设置两组点位破解" class="headerlink" title="1.1 直接BurpSuite设置两组点位破解"></a>1.1 直接BurpSuite设置两组点位破解</h3><h3 id="1-2-有验证码的破解（on-client）"><a href="#1-2-有验证码的破解（on-client）" class="headerlink" title="1.2 有验证码的破解（on client）"></a>1.2 有验证码的破解（on client）</h3><p>我们打开源码，根据提示进入PHP源码，查看到验证码是前端生成且验证的（前端验证码的判断）。</p>
+<h4 id="验证码源码"><a href="#验证码源码" class="headerlink" title="验证码源码"></a>验证码源码</h4><p><img src="/huppe.github.io/./img/1.png" alt="图片1"></p>
+<p><img src="/huppe.github.io/./img/2.png" alt="图片2"></p>
+<p><img src="/huppe.github.io/./img/3.png" alt="图片3"></p>
+<p>此时，我们只需要抓包查看请求，把一些验证码相关的请求改一下。</p>
+<h4 id="请求抓包"><a href="#请求抓包" class="headerlink" title="请求抓包"></a>请求抓包</h4><p><img src="/huppe.github.io/./img/4.png" alt="图片4"></p>
+<p>最后，查看爆破长度，即可成功爆破。</p>
+<h4 id="爆破成功"><a href="#爆破成功" class="headerlink" title="爆破成功"></a>爆破成功</h4><p><img src="/huppe.github.io/./img/5.png" alt="图片5"></p>
+<h3 id="1-3-有验证码的破解（on-server）"><a href="#1-3-有验证码的破解（on-server）" class="headerlink" title="1.3 有验证码的破解（on server）"></a>1.3 有验证码的破解（on server）</h3><p>尝试了待验证码请求爆破，居然成功了。有些服务器后台是不刷新验证码的，所以抓到包后不要放包，这样验证码就一直有效。把包发到攻击模块直接爆破。</p>
+<h4 id="请求包抓取"><a href="#请求包抓取" class="headerlink" title="请求包抓取"></a>请求包抓取</h4><p><img src="/huppe.github.io/./img/6.png" alt="图片6"></p>
+<h2 id="2-Token爆破"><a href="#2-Token爆破" class="headerlink" title="2. Token爆破"></a>2. Token爆破</h2><p>Token的作用简单理解，就是验证服务器给前端发的令牌，来判断请求是否合法。</p>
+<p>我们使用 <strong>Pitchfork</strong> 模式进行爆破密码和Token。</p>
+<h3 id="2-1-四种爆破模式"><a href="#2-1-四种爆破模式" class="headerlink" title="2.1 四种爆破模式"></a>2.1 四种爆破模式</h3><ul>
+<li><strong>Sniper</strong>（狙击手模式）</li>
+<li><strong>Battering ram</strong>（攻城锤模式）</li>
+<li><strong>Pitchfork</strong>（叉子模式）</li>
+<li><strong>Cluster bomb</strong>（集束炸弹模式）</li>
+</ul>
+<h4 id="爆破模式示意图"><a href="#爆破模式示意图" class="headerlink" title="爆破模式示意图"></a>爆破模式示意图</h4><p><img src="/huppe.github.io/./img/7.png" alt="图片7"></p>
+<h3 id="2-2-添加密码和Token的Payload"><a href="#2-2-添加密码和Token的Payload" class="headerlink" title="2.2 添加密码和Token的Payload"></a>2.2 添加密码和Token的Payload</h3><ul>
+<li>添加密码的Payload对应添加密码的爆破字典。</li>
+<li>添加Token的Payload，点击选项里的 <strong>Grep—Extract</strong>，然后点击获取回复，选中Token的值复制，最后点击OK。</li>
+</ul>
+<h4 id="提取Token值"><a href="#提取Token值" class="headerlink" title="提取Token值"></a>提取Token值</h4><p>原理：通过提取返回包中的Token值作为参数进行爆破。</p>
+<p><img src="/huppe.github.io/./img/8.png" alt="图片8"></p>
+<h4 id="Token爆破成功"><a href="#Token爆破成功" class="headerlink" title="Token爆破成功"></a>Token爆破成功</h4><p><img src="/huppe.github.io/./img/9.png" alt="图片9"></p>
+<p>最后，爆破成功。</p>
+<p><img src="/huppe.github.io/./img/10.png" alt="图片10"></p>
+<h2 id="3-参考文献"><a href="#3-参考文献" class="headerlink" title="3. 参考文献"></a>3. 参考文献</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/190929">https://www.modb.pro/db/190929</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/1626287">https://developer.aliyun.com/article/1626287</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://huppe.github.io">huppe</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://huppe.github.io/2025/03/01/pikachu%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3writeup/">https://huppe.github.io/2025/03/01/pikachu%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3writeup/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://huppe.github.io" target="_blank">huppe's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/huppe.github.io/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/">网络安全</a><a class="post-meta__tags" href="/huppe.github.io/tags/%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/">暴力破解</a></div><div class="post-share"><div class="social-share" data-image="/huppe.github.io/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/huppe.github.io/2024/11/23/this-is-my-first-blog%EF%BC%81/" title="this is my first blog！"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">this is my first blog！</div></div><div class="info-2"><div class="info-item-1">基本信息 姓名: 张志航   学历背景: 网络空间安全（东莞理工学院）  专业背景与研究领域 研究方向:   web转战re+pwm中   学术成果:   暂时无    技能与专长 技术技能:   熟悉C语言、python语言，了解多门语言HTML,c++,css，php等 会使用网络渗透工具bp，中国蚁剑等   软技能:   优秀的沟通与组织能力，在团队协作和领导中表现突出。   高度的适应能力和快速学习能力。    兴趣与爱好 球类:   乒乓球、羽毛球、篮球等    未来展望希望在网络空间安全领域继续深造，攻读硕士学位，一起努力吧！ </div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/huppe.github.io/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/huppe.github.io/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">huppe</div><div class="author-info-description">Welcome to huppe's Blog! Sharing my journey.</div><div class="site-data"><a href="/huppe.github.io/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/huppe.github.io/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/huppe.github.io/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/huppee"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Pikachu%E9%9D%B6%E5%9C%BA%E7%AC%94%E8%AE%B0"><span class="toc-number">1.</span> <span class="toc-text">Pikachu靶场笔记</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3"><span class="toc-number">1.1.</span> <span class="toc-text">1. 暴力破解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E7%9B%B4%E6%8E%A5BurpSuite%E8%AE%BE%E7%BD%AE%E4%B8%A4%E7%BB%84%E7%82%B9%E4%BD%8D%E7%A0%B4%E8%A7%A3"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1 直接BurpSuite设置两组点位破解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E6%9C%89%E9%AA%8C%E8%AF%81%E7%A0%81%E7%9A%84%E7%A0%B4%E8%A7%A3%EF%BC%88on-client%EF%BC%89"><span class="toc-number">1.1.2.</span> <span class="toc-text">1.2 有验证码的破解（on client）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E7%A0%81%E6%BA%90%E7%A0%81"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">验证码源码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%B7%E6%B1%82%E6%8A%93%E5%8C%85"><span class="toc-number">1.1.2.2.</span> <span class="toc-text">请求抓包</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%88%86%E7%A0%B4%E6%88%90%E5%8A%9F"><span class="toc-number">1.1.2.3.</span> <span class="toc-text">爆破成功</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E6%9C%89%E9%AA%8C%E8%AF%81%E7%A0%81%E7%9A%84%E7%A0%B4%E8%A7%A3%EF%BC%88on-server%EF%BC%89"><span class="toc-number">1.1.3.</span> <span class="toc-text">1.3 有验证码的破解（on server）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%B7%E6%B1%82%E5%8C%85%E6%8A%93%E5%8F%96"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">请求包抓取</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Token%E7%88%86%E7%A0%B4"><span class="toc-number">1.2.</span> <span class="toc-text">2. Token爆破</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%9B%9B%E7%A7%8D%E7%88%86%E7%A0%B4%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.1 四种爆破模式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%88%86%E7%A0%B4%E6%A8%A1%E5%BC%8F%E7%A4%BA%E6%84%8F%E5%9B%BE"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">爆破模式示意图</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%B7%BB%E5%8A%A0%E5%AF%86%E7%A0%81%E5%92%8CToken%E7%9A%84Payload"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.2 添加密码和Token的Payload</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8F%90%E5%8F%96Token%E5%80%BC"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">提取Token值</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Token%E7%88%86%E7%A0%B4%E6%88%90%E5%8A%9F"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">Token爆破成功</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-number">1.3.</span> <span class="toc-text">3. 参考文献</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/huppe.github.io/2025/03/01/pikachu%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3writeup/" title="Pikachu 靶场暴力破解">Pikachu 靶场暴力破解</a><time datetime="2025-03-01T15:09:54.000Z" title="发表于 2025-03-01 23:09:54">2025-03-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/huppe.github.io/2024/11/23/this-is-my-first-blog%EF%BC%81/" title="this is my first blog！">this is my first blog！</a><time datetime="2024-11-23T04:25:54.000Z" title="发表于 2024-11-23 12:25:54">2024-11-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/huppe.github.io/2024/11/22/hello-world/" title="Hello World">Hello World</a><time datetime="2024-11-22T12:38:59.942Z" title="发表于 2024-11-22 20:38:59">2024-11-22</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2025 By huppe</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Powered by Hexo & Butterfly Theme</div></div><!-- 添加 Live2D 看板娘--><div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" width="300" height="300"></canvas><div class="waifu-tool"><span class="fa fa-lg fa-comment"></span><span class="fa fa-lg fa-paper-plane"></span><span class="fa fa-lg fa-user-circle"></span><span class="fa fa-lg fa-street-view"></span><span class="fa fa-lg fa-camera-retro"></span><span class="fa fa-lg fa-times"></span></div></div><!-- 引入 Live2D 所需的 CSS 和 JavaScript--><script src="/huppe.github.io/live2d-widget/live2d.min.js"></script><script src="/huppe.github.io/live2d-widget/waifu-tips.js"></script><script src="/huppe.github.io/live2d-widget/autoload.js"></script><link rel="stylesheet" href="/huppe.github.io/live2d-widget/waifu.css"/></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><script src="/js/particles.min.js"></script><script>particlesJS.load('particles-js', '/json/particles.json', function() {
+  console.log('Particles.js loaded');
+});
+</script><div><script src="/huppe.github.io/js/utils.js"></script><script src="/huppe.github.io/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><!-- 新增：动态背景脚本--><script src="/js/particles.min.js"></script><script>particlesJS.load('particles-js', '/json/particles.json', function() {
+  console.log('Particles.js loaded');
+})</script></div></body></html>
